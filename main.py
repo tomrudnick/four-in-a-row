@@ -140,21 +140,19 @@ def run_game():
                     ki.game = game
 
         screen.fill(BLUE)
-        if game.animation_finished:
-            if game.check_win_player(game.human):
-                game_ended = True
-                render_text(screen, "You have beaten\nthe computer!", text_font, game.playerColors[game.human], [10, 80])
-            elif game.check_win_player(game.ki):
-                game_ended = True
-                render_text(screen, "I am smarter\nthan you!", text_font, game.playerColors[game.ki], [10, 80])
-            elif game.check_tie():
-                game_ended = True
-                render_text(screen, "It's a tie!", text_font, game.playerColors[game.human], [10, 80])
+        if game.check_win_player(game.human):
+            game_ended = True
+            render_text(screen, "You have beaten\nthe computer!", text_font, game.playerColors[game.human], [10, 80])
+        elif game.check_win_player(game.ki):
+            game_ended = True
+            render_text(screen, "I am smarter\nthan you!", text_font, game.playerColors[game.ki], [10, 80])
+        elif game.check_tie():
+            game_ended = True
+            render_text(screen, "It's a tie!", text_font, game.playerColors[game.human], [10, 80])
 
-
-        if game.currentPlayer == game.human:
+        elif game.currentPlayer == game.human:
             render_text(screen, "It's your turn", text_font, game.playerColors[game.human], [10, 80])
-        if game.currentPlayer == game.ki:
+        elif game.currentPlayer == game.ki:
             render_text(screen, "I'm thinking...", text_font, game.playerColors[game.ki], [10, 80])
 
 

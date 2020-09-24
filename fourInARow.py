@@ -208,3 +208,5 @@ class FourInARow:
         self.game_piece_counter = 0
         self.currentPlayer = random.randint(1, 2)
         self.lastPlayer = 2 if self.currentPlayer == 1 else 1
+        self.animation_finished = True
+        self.animation_offset_pos = 0

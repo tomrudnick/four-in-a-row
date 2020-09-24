@@ -15,6 +15,10 @@ class FourInARow:
         self.lastPlayer = 2 if self.currentPlayer == 1 else 1
         self.game_piece_counter = 0
         self.turn_history = []
+
+        self.animation_finished = True
+        self.animation_offset_pos = 0
+
     def print_board(self):
         print(self.board)
 
@@ -83,6 +87,8 @@ class FourInARow:
                     self.turn_history.append((i, column - 1))
                     self.game_piece_counter += 1
                     self.switch_player()
+                    self.animation_finished = False
+                    self.animation_offset_pos = 0
                     return True
         return False
 

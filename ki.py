@@ -4,9 +4,11 @@ from concurrent import futures
 class KI:
     #position_map  = [-1, -1, 1, 2, 2, 1, -1, -1]
     position_map = [-1, -1, 1, 2, 1, -1 , -1]
-    def __init__(self, depth, game):
+    def __init__(self, depth, game, maximize_player):
         self.depth = depth
         self.game = game
+        self.maximize_player = maximize_player
+        self.minimize_player = self.game.human if maximize_player == self.game.ki else self.game.ki
 
 
     def evaluate_board(self, board, depth):
@@ -15,7 +17,7 @@ class KI:
 
         winCheck = board.check_win_fast()
         if winCheck:
-            if board.lastPlayer == board.ki:
+            if board.lastPlayer == self.maximize_player:
                 total_eval_score += 100
                 total_eval_score += 10 * depth
             else:
@@ -25,14 +27,14 @@ class KI:
             if board.check_tie_fast():
                 total_eval_score = 0
 
-        total_eval_score += 15 * board.check_three_row(self.game.ki)
-        total_eval_score -= 15 * board.check_three_row(self.game.human)
+        total_eval_score += 15 * board.check_three_row(self.maximize_player)
+        total_eval_score -= 15 * board.check_three_row(self.minimize_player)
 
         for row in range(board.rows - 1, -1, -1):
             for column in range(0, board.columns, 1):
-                if board.board[row][column] == board.ki:
+                if board.board[row][column] == self.maximize_player:
                     total_eval_score += self.position_map[column]
-                elif board.board[row][column] == board.human:
+                elif board.board[row][column] == self.minimize_player:
                     total_eval_score += self.position_map[column] * -1
         return total_eval_score
 

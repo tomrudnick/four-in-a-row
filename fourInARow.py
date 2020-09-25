@@ -19,6 +19,12 @@ class FourInARow:
         self.animation_finished = True
         self.animation_offset_pos = 0
 
+        self.help_human = False
+        self.help_human_blink_counter = 0
+        self.help_human_blink_old_time = 0
+        self.help_move = (0, 0)
+        self.help_human_show_piece = False
+
     def print_board(self):
         print(self.board)
 

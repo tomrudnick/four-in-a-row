@@ -17,6 +17,7 @@ OFFSET_X = 0
 OFFSET_Y = 250
 
 DEPTH = 4
+HUMAN_KI_DEPTH = 5
 
 test_board = [[0, 0, 0, 0, 0, 0, 0],
               [0, 0, 0, 0, 0, 0, 0],
@@ -82,9 +83,10 @@ def calculate_piece_position(position):
 
 
 
-def help_player(game):
+def help_player(game, depth):
+    print("HELP HUMAN MOVE")
     game_copy = copy.deepcopy(game)
-    human_help_ki = KI(DEPTH, game_copy, game.human)
+    human_help_ki = KI(depth, game_copy, game.human)
     human_help_ki.calculate_move_multiple_processes()
     game.help_move = game_copy.turn_history[-1]
     game.help_human = True
@@ -111,6 +113,8 @@ def run_game():
     button_text_swap_colors = button_font.render('swap color', True, color_white)
     button_text_help = button_font.render('help', True, color_white)
     button_text_ki_toggle = button_font.render('KI Mode', True, color_white)
+    button_text_human_ki_depth_plus = button_font.render('+', True, color_white)
+    button_text_human_ki_depth_minus = button_font.render('-', False, color_white)
     # Game Buttons
     quitButton = Button((10, 10), (100, 50), button_text_quit, color_dark, color_light, screen, 10)
     resetButton = Button((120, 10), (100, 50), button_text_reset, color_dark, color_light, screen, 10)
@@ -120,14 +124,15 @@ def run_game():
     swap_colors_button = Button((525, 10), (170, 50), button_text_swap_colors, color_dark, color_light, screen, 10)
     help_button = Button((595, 80), (100, 50), button_text_help, color_dark, color_light, screen, 10)
     ki_toggle_button = Button((525, 150), (170, 50), button_text_ki_toggle, color_dark, color_light, screen, 10)
-
+    human_ki_depth_minus_button = Button((525, 220), (50, 50), button_text_human_ki_depth_minus, color_dark, color_light, screen, 10)
+    human_ki_depth_plus_button = Button((645, 220), (50, 50), button_text_human_ki_depth_plus, color_dark, color_light, screen, 10)
     game = FourInARow(COLUMNS, ROWS)
     game.currentPlayer = game.human
     game.lastPlayer = game.ki
     game_ended = False
     #game.board = test_board
     ki = KI(DEPTH, game, game.ki)
-    ki_human = KI(DEPTH, game, game.human)
+    ki_human = KI(HUMAN_KI_DEPTH, game, game.human)
     ki_overtake_mode = False
 
 
@@ -137,9 +142,11 @@ def run_game():
         mouse_pos = pygame.mouse.get_pos()
         #if it's the turn of the KI it will make it's turn
         if game.currentPlayer == game.ki and not game_ended and game.animation_finished:
+            print("KI MOVE")
             ki.calculate_move_multiple_processes()
         # if the KI "overtaken mode" is activated it will make a turn
         if game.currentPlayer == game.human and not game_ended and game.animation_finished and ki_overtake_mode:
+            print("HUMAN KI MOVE")
             ki_human.calculate_move_multiple_processes()
 
         for event in pygame.event.get():
@@ -179,10 +186,17 @@ def run_game():
                     game.playerColors[1], game.playerColors[2] = game.playerColors[2], game.playerColors[1]
                 # recieve a tip
                 elif help_button.pressed(mouse_pos):
-                    help_player(game)
+                    help_player(game, ki_human.depth)
                 # activate the ki mode, the ki will play for you
                 elif ki_toggle_button.pressed(mouse_pos):
                     ki_overtake_mode = not ki_overtake_mode
+                # decrease human ki depth by one
+                elif human_ki_depth_minus_button.pressed(mouse_pos):
+                    if ki_human.depth > 1:
+                        ki_human.depth -= 1
+                # increase human ki depth by one
+                elif human_ki_depth_plus_button.pressed(mouse_pos):
+                    ki_human.depth += 1
                 # place a piece
                 elif not game_ended and game.currentPlayer == game.human and not ki_overtake_mode:
                     column = calculate_piece_position(mouse_pos)
@@ -217,9 +231,10 @@ def run_game():
         swap_colors_button.drawButton(mouse_pos)
         help_button.drawButton(mouse_pos)
         ki_toggle_button.drawButton(mouse_pos)
-
+        human_ki_depth_minus_button.drawButton(mouse_pos)
+        human_ki_depth_plus_button.drawButton(mouse_pos)
         render_text(screen, str(ki.depth), text_font, color_white, [400, 0])
-
+        render_text(screen, str(ki_human.depth), text_font, color_white, [585, 205])
         pygame.display.update()
         FPS.tick(60) # Locks FPS to 60
 
